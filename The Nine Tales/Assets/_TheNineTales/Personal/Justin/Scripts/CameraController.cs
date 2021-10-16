@@ -1,0 +1,66 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CameraController : MonoBehaviour
+{
+    public Transform target;
+	public float smoothSpeed = 0.125f;
+
+	public Vector3 offset;
+	public bool calculateOffsetOnStart = true;
+
+	private float narrativeZoomSize;
+	public float platformingCameraSize = 7.8f;
+	public float zoomTime = 0.7f;
+	public AnimationCurve zoomCurve;
+
+	private float zoomTimer;
+	private bool zooming;
+	private bool zoomedIn;
+
+	private Camera cam;
+
+    private void Start()
+    {
+		cam = GetComponent<Camera>();
+		narrativeZoomSize = cam.orthographicSize;
+    }
+
+    public void FixedUpdate()
+	{
+		Vector3 desiredPosition = target.position + offset;
+		Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
+		transform.position = smoothedPosition;
+
+        if (zooming)
+        {
+			zoomTimer = Mathf.Clamp(zoomTimer + Time.deltaTime, 0, zoomTime);
+            if (zoomedIn)
+            {
+				cam.orthographicSize = Mathf.Lerp(platformingCameraSize, narrativeZoomSize, zoomCurve.Evaluate(zoomTimer/zoomTime));
+            } else
+            {
+				cam.orthographicSize = Mathf.Lerp(narrativeZoomSize, platformingCameraSize, zoomCurve.Evaluate(zoomTimer / zoomTime));
+			}
+        }
+	}
+
+	[ContextMenu("Toggle Zoom")]
+	public void ToggleCameraZoom()
+    {
+		zoomTimer = 0;
+		zoomedIn = !zoomedIn;
+		zooming = true;
+    }
+
+	public void SetCameraZoom(bool zoomIn)
+    {
+		if (zoomedIn != zoomIn)
+		{
+			zoomIn = zoomedIn;
+			zoomTimer = 0;
+			zooming = true;
+		}
+    }
+}
