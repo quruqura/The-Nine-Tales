@@ -10,21 +10,28 @@ public class CameraController : MonoBehaviour
 	public Vector3 offset;
 	public bool calculateOffsetOnStart = true;
 
-	private float narrativeZoomSize;
-	public float platformingCameraSize = 7.8f;
+	public float platformingCameraSize;
+	public float narrativeCameraSize = 5.3f;
 	public float zoomTime = 0.7f;
 	public AnimationCurve zoomCurve;
 
 	private float zoomTimer;
 	private bool zooming;
-	private bool zoomedIn;
+	public bool zoomedIn;
 
 	private Camera cam;
 
     private void Start()
     {
 		cam = GetComponent<Camera>();
-		narrativeZoomSize = cam.orthographicSize;
+
+		if(target == null)
+        {
+			target = GameObject.Find("Player").transform;
+        }
+
+		if (zoomedIn && narrativeCameraSize == 0) narrativeCameraSize = cam.orthographicSize; 
+		else if(!zoomedIn && platformingCameraSize == 0) platformingCameraSize = cam.orthographicSize;
     }
 
     public void FixedUpdate()
@@ -38,10 +45,10 @@ public class CameraController : MonoBehaviour
 			zoomTimer = Mathf.Clamp(zoomTimer + Time.deltaTime, 0, zoomTime);
             if (zoomedIn)
             {
-				cam.orthographicSize = Mathf.Lerp(platformingCameraSize, narrativeZoomSize, zoomCurve.Evaluate(zoomTimer/zoomTime));
+				cam.orthographicSize = Mathf.Lerp(narrativeCameraSize, platformingCameraSize, zoomCurve.Evaluate(zoomTimer/zoomTime));
             } else
             {
-				cam.orthographicSize = Mathf.Lerp(narrativeZoomSize, platformingCameraSize, zoomCurve.Evaluate(zoomTimer / zoomTime));
+				cam.orthographicSize = Mathf.Lerp(platformingCameraSize, narrativeCameraSize, zoomCurve.Evaluate(zoomTimer / zoomTime));
 			}
         }
 	}
