@@ -30,14 +30,20 @@ public class TalkOnTrigger : MonoBehaviour
     {
         if (allowTriggers && (targetTag == collision.gameObject.tag || string.IsNullOrEmpty(targetTag)))
         {
-            flowchart.ExecuteBlock("Trigger");
+            StartTalking();
         }
     }
     private void OnCollisionEnter2D(UnityEngine.Collision2D collision)
     {
         if (allowCollisions && (targetTag == collision.gameObject.tag || string.IsNullOrEmpty(targetTag)))
         {
-            flowchart.ExecuteBlock("Trigger");
+            StartTalking();
         }
+    }
+
+    public void StartTalking()
+    {
+        flowchart.ExecuteBlock("Trigger");
+        StateManager.SetState(GameState.Dialogue);
     }
 }

@@ -16,6 +16,8 @@ public class CameraController : MonoBehaviour
 	public AnimationCurve zoomCurve;
 
 	private float zoomTimer;
+	private float targetSize;
+	private float startingSize;
 	private bool zooming;
 	public bool zoomedIn;
 
@@ -43,31 +45,43 @@ public class CameraController : MonoBehaviour
         if (zooming)
         {
 			zoomTimer = Mathf.Clamp(zoomTimer + Time.deltaTime, 0, zoomTime);
-            if (zoomedIn)
+
+			cam.orthographicSize = Mathf.Lerp(startingSize, targetSize, zoomCurve.Evaluate(zoomTimer / zoomTime));
+
+			if (zoomTimer >= zoomTime) zooming = false;
+			
+			/*if (zoomedIn)
             {
 				cam.orthographicSize = Mathf.Lerp(narrativeCameraSize, platformingCameraSize, zoomCurve.Evaluate(zoomTimer/zoomTime));
             } else
             {
 				cam.orthographicSize = Mathf.Lerp(platformingCameraSize, narrativeCameraSize, zoomCurve.Evaluate(zoomTimer / zoomTime));
-			}
+			}*/
         }
 	}
 
-	[ContextMenu("Toggle Zoom")]
-	public void ToggleCameraZoom()
+	[ContextMenu("Zoom Out")]
+	public void ZoomOut()
     {
-		zoomTimer = 0;
-		zoomedIn = !zoomedIn;
-		zooming = true;
+		SetCameraZoom(platformingCameraSize);
+    }
+	[ContextMenu("Zoom In")]
+	public void ZoomIn()
+    {
+		SetCameraZoom(narrativeCameraSize);
     }
 
 	public void SetCameraZoom(bool zoomIn)
     {
-		if (zoomedIn != zoomIn)
-		{
-			zoomIn = zoomedIn;
-			zoomTimer = 0;
-			zooming = true;
-		}
+		if (zoomIn) SetCameraZoom(narrativeCameraSize);
+		else SetCameraZoom(platformingCameraSize);
+    }
+
+	public void SetCameraZoom(float zoom)
+    {
+		targetSize = zoom;
+		startingSize = cam.orthographicSize;
+		zooming = true;
+		zoomTimer = 0;
     }
 }

@@ -13,8 +13,8 @@ public class CameraZoomTrigger : MonoBehaviour
     [Tooltip("Set to true if you want the camera to zoom in to a narrative size, or false for platforming size.")]
     public bool zoomIn;
 
-    [Tooltip("Set to true if you want the trigger zone to toggle the camera's zoom instead of set it. Setting to true makes \"Zoom In\" get ignored.")]
-    public bool toggle;
+    //[Tooltip("Set to true if you want the trigger zone to toggle the camera's zoom instead of set it. Setting to true makes \"Zoom In\" get ignored.")]
+    //public bool toggle;
 
     [Tooltip("The tag assigned to the player object. Leave empty if you want any tag to work.")]
     public string playerTag = "Player";
@@ -32,11 +32,9 @@ public class CameraZoomTrigger : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Beep");
         if(collision.gameObject.tag == playerTag || string.IsNullOrEmpty(playerTag))
         {
-            if (!toggle) cam.SetCameraZoom(zoomIn);
-            else cam.ToggleCameraZoom();
+            cam.SetCameraZoom(zoomIn);
         }
     }
 }
