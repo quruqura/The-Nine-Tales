@@ -5,10 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Scenes/SampleScene.unity
-    guid: d1c3109bdb54ad54c8a2b2838528e640
   - enabled: 1
-    path: Assets/_TheNineTales/Personal/Abdullah/Scenes/ControllerTrial.unity
-    guid: b283f955b38ab454e949a7ea8f3313d5
+    path: Assets/Settings/Scenes/2D URP Scene Template.unity
+    guid: 2cda990e2423bbf4892e6590ba056729
   m_configObjects: {}
