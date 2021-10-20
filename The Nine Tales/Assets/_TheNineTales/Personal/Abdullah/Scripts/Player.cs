@@ -33,6 +33,18 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float m_decelerationTimeFromQuickturn = .125f;
 
+    [SerializeField]
+    private float DashDuration = 1;
+
+    [SerializeField]
+    private float DashCooldown = 3;
+
+    [SerializeField]
+    private float DashSpeed = 10;
+
+    bool CanDash = true;
+    bool isDashing = false;
+
     public enum FacingDirection { Left, Right }
     bool isQuickTurning;
     bool isBufferJumpReady;
@@ -82,6 +94,7 @@ public class Player : MonoBehaviour
         //BufferJump();
         // The following function ensures that the knight does not exceed TERMINAL VELOCITY
         TerminalVelocity();
+        HandleDash();
 
         m_PlayerRigidBody.velocity = m_PlayerVelocity;
         LastFacingDirection = GetFacingDirection();
@@ -208,18 +221,62 @@ public class Player : MonoBehaviour
 
     void LimitSpeed()
     {
-        // Prevent player from going over speed limit
-        if (m_PlayerVelocity.x > m_maxHorizontalSpeed)
+        if (!isDashing)
         {
-            m_PlayerVelocity.x = m_maxHorizontalSpeed;
-            // Reset quick turning
-            isQuickTurning = false;
+            // Prevent player from going over speed limit
+            if (m_PlayerVelocity.x > m_maxHorizontalSpeed)
+            {
+                m_PlayerVelocity.x = m_maxHorizontalSpeed;
+                // Reset quick turning
+                isQuickTurning = false;
+            }
+            if (m_PlayerVelocity.x < -m_maxHorizontalSpeed)
+            {
+                isQuickTurning = false;
+                m_PlayerVelocity.x = -m_maxHorizontalSpeed;
+            }
         }
-        if (m_PlayerVelocity.x < -m_maxHorizontalSpeed)
+
+
+
+
+    }
+
+    void HandleDash()
+    {
+        if (Input.GetKeyDown("s") && CanDash)
         {
-            isQuickTurning = false;
-            m_PlayerVelocity.x = -m_maxHorizontalSpeed;
+            StartDash();
         }
+        if (isDashing)
+        {
+            if (LastFacingDirection == FacingDirection.Right)
+            {
+                m_PlayerVelocity.x = DashSpeed;
+            }
+            else
+            {
+                m_PlayerVelocity.x = -DashSpeed;
+            }
+            m_PlayerVelocity.y = 0;
+        } 
+    }
+    void StartDash()
+    {
+        Invoke("EnableDash", DashCooldown);
+        Invoke("ResetSpeedLimit", DashDuration);
+        isDashing = true;
+        CanDash = false;
+
+    }
+
+    void EnableDash()
+    {
+        CanDash = true;
+    }
+    void ResetSpeedLimit()
+    {
+        isDashing = false;
     }
     //************** JUMP ************** JUMP ************* JUMP *********** JUMP ********* JUMP ************** JUMP ********** JUMP ********* JUMP *************** JUMP ********************
 
@@ -329,6 +386,7 @@ public class Player : MonoBehaviour
 
     public void makeDead()
     {
-        SceneManager.LoadScene("Level_1");
+        Scene scene = SceneManager.GetActiveScene(); 
+        SceneManager.LoadScene(scene.name);
     }
 }
